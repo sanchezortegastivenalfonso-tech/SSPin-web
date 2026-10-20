@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sspin-descargas.netlify.app/sitemap.xml

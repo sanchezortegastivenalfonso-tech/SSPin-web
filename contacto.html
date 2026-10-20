@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto | SS MediaDrop</title>
+    <meta name="description" content="Contacta con SS MediaDrop: correo electrónico, formulario, ayuda con problemas de descarga y solicitudes por derechos de autor.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sspin-descargas.netlify.app/contacto.html">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Contacto | SS MediaDrop">
+    <meta property="og:description" content="Contacta con SS MediaDrop: correo electrónico, formulario, ayuda con problemas de descarga y solicitudes por derechos de autor.">
+    <meta property="og:url" content="https://sspin-descargas.netlify.app/contacto.html">
+    <meta property="og:image" content="https://sspin-descargas.netlify.app/favicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/paginas.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1380562903247281" crossorigin="anonymous"></script>
+    
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="/" title="SS MediaDrop"><span class="logo-box">SS</span><span class="brand-name">MediaDrop</span></a>
+        <a class="back-link" href="/">&larr; Volver al inicio</a>
+    </header>
+    <nav class="site-nav" aria-label="Secciones del sitio"><a href="/guias.html">Guías</a><a href="/preguntas-frecuentes.html">Preguntas frecuentes</a><a href="/sobre-nosotros.html">Sobre nosotros</a><a href="/contacto.html" class="current">Contacto</a></nav>
+
+    <main class="page-main">
+        <h1>Contacto</h1>
+        
+
+        <p class="lead">¿Tienes una duda, una sugerencia o encontraste un problema? Escríbenos; leemos todos los mensajes.</p>
+
+        <h2>Correo electrónico</h2>
+        <p>Puedes escribirnos directamente a <a href="mailto:sm.desarrolladores.pro@gmail.com">sm.desarrolladores.pro@gmail.com</a>. Procuramos responder lo antes posible, aunque algunos mensajes pueden tardar unos días.</p>
+
+        <h2>Formulario de contacto</h2>
+        <form class="contact-form" id="contact-form" novalidate>
+            <div>
+                <label for="c-tipo">Motivo</label>
+                <select id="c-tipo" name="tipo">
+                    <option>Problema de descarga</option>
+                    <option>Sugerencia o nueva función</option>
+                    <option>Error en el sitio o la aplicación</option>
+                    <option>Derechos de autor / solicitud de retiro</option>
+                    <option>Publicidad</option>
+                    <option>Otro</option>
+                </select>
+            </div>
+            <div>
+                <label for="c-correo">Tu correo electrónico (opcional, para poder responderte)</label>
+                <input type="email" id="c-correo" name="correo" placeholder="tucorreo@ejemplo.com" autocomplete="email">
+            </div>
+            <div>
+                <label for="c-mensaje">Mensaje</label>
+                <textarea id="c-mensaje" name="mensaje" placeholder="Cuéntanos qué ocurrió o qué te gustaría proponer" required></textarea>
+            </div>
+            <div class="form-status" id="c-estado" role="status"></div>
+            <button type="submit" class="btn-primary" id="c-enviar">Enviar mensaje</button>
+        </form>
+
+        <h2>Si tienes un problema de descarga</h2>
+        <p>Para ayudarte más rápido, cuéntanos la plataforma (TikTok, Pinterest o Instagram), si el enlace es de un contenido público y el mensaje de error que aparece. Revisa antes nuestras <a href="/preguntas-frecuentes.html">preguntas frecuentes</a>: muchas respuestas están ahí.</p>
+
+        <h2>Derechos de autor</h2>
+        <p>Si eres titular de derechos y quieres solicitar el retiro de un contenido, escribe a <a href="mailto:sm.desarrolladores.pro@gmail.com">sm.desarrolladores.pro@gmail.com</a> con el enlace, una descripción de tu obra y tus datos de contacto. Más información en los <a href="/terminos.html">Términos de uso</a>.</p>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-links"><a href="/privacidad.html">Política de Privacidad</a><a href="/terminos.html">Términos de uso</a><a href="/cookies.html">Política de cookies</a></div>
+        <div class="footer-links"><a href="/guias.html">Guías</a><a href="/preguntas-frecuentes.html">Preguntas frecuentes</a><a href="/sobre-nosotros.html">Sobre nosotros</a><a href="/contacto.html">Contacto</a></div>
+        <p>&copy; 2026 SS MediaDrop &middot; Servicio independiente, no afiliado a TikTok, Pinterest, Instagram, CapCut ni Telegram.</p>
+    </footer>
+
+    <script>
+        (function () {
+            var form = document.getElementById('contact-form');
+            var estado = document.getElementById('c-estado');
+            var boton = document.getElementById('c-enviar');
+
+            function mostrar(clase, texto) {
+                estado.className = 'form-status ' + clase;
+                estado.textContent = texto;
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var mensaje = document.getElementById('c-mensaje').value.trim();
+                if (!mensaje) {
+                    mostrar('error', 'Escribe un mensaje antes de enviar.');
+                    return;
+                }
+                boton.disabled = true;
+                boton.textContent = 'Enviando...';
+
+                fetch('https://formsubmit.co/ajax/sm.desarrolladores.pro@gmail.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        _subject: 'Mensaje de contacto - SS MediaDrop',
+                        _template: 'table',
+                        _captcha: 'false',
+                        tipo: document.getElementById('c-tipo').value,
+                        correo_usuario: document.getElementById('c-correo').value.trim() || 'No indicado',
+                        mensaje: mensaje,
+                        origen: 'Página de contacto'
+                    })
+                })
+                .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+                .then(function (res) {
+                    if (res.ok && (res.data.success === true || res.data.success === 'true')) {
+                        form.reset();
+                        mostrar('ok', 'Gracias. Hemos recibido tu mensaje.');
+                    } else {
+                        throw new Error('fallo');
+                    }
+                })
+                .catch(function () {
+                    mostrar('error', 'No se pudo enviar. Inténtalo de nuevo o escríbenos a sm.desarrolladores.pro@gmail.com.');
+                })
+                .then(function () {
+                    boton.disabled = false;
+                    boton.textContent = 'Enviar mensaje';
+                });
+            });
+        })();
+    </script>
+
+</body>
+</html>
