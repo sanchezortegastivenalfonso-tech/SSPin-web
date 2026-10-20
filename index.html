@@ -1265,37 +1265,56 @@
                 return;
             }
 
-            const textoOriginal = btn.textContent;
+            // Se cierra la ventana al instante y el envío continúa en segundo plano
+            // (el servicio de correo puede tardar varios segundos en responder).
             btn.disabled = true;
-            btn.textContent = '...';
+            const datos = {
+                _subject: 'Nuevo comentario - SS MediaDrop',
+                _template: 'table',
+                _captcha: 'false',
+                tipo: tipo ? tipo.textContent : '',
+                correo_usuario: email || 'No indicado',
+                mensaje: info,
+                idioma: currentLang,
+                plataforma: navigator.userAgent
+            };
+            closeModal();
+            const aviso = mostrarAviso('⏳ ...', 0);
+
+            const controlador = new AbortController();
+            const limite = setTimeout(() => controlador.abort(), 30000);
 
             try {
                 const res = await fetch(`https://formsubmit.co/ajax/${FEEDBACK_EMAIL}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        _subject: 'Nuevo comentario - SS MediaDrop',
-                        _template: 'table',
-                        _captcha: 'false',
-                        tipo: tipo ? tipo.textContent : '',
-                        correo_usuario: email || 'No indicado',
-                        mensaje: info,
-                        idioma: currentLang,
-                        plataforma: navigator.userAgent
-                    })
+                    body: JSON.stringify(datos),
+                    signal: controlador.signal,
+                    keepalive: true
                 });
                 const data = await res.json();
                 if (res.ok && (data.success === true || data.success === 'true')) {
-                    closeModal();
-                    alert('✅');
+                    aviso.textContent = '✅';
                 } else {
                     throw new Error('fail');
                 }
             } catch (err) {
-                btn.disabled = false;
-                btn.textContent = textoOriginal;
-                alert('Error');
+                aviso.textContent = '❌ Error';
+            } finally {
+                clearTimeout(limite);
+                setTimeout(() => { if (aviso.parentNode) aviso.parentNode.removeChild(aviso); }, 3000);
             }
+        }
+
+        function mostrarAviso(texto) {
+            const el = document.createElement('div');
+            el.textContent = texto;
+            el.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);' +
+                'background:#0f1115;color:#fff;border:1px solid #00f2fe;border-radius:100px;' +
+                'padding:12px 22px;font-weight:700;font-size:0.95rem;z-index:5000;' +
+                'box-shadow:0 10px 30px rgba(0,0,0,0.6);';
+            document.body.appendChild(el);
+            return el;
         }
 
         function closeModal() {
