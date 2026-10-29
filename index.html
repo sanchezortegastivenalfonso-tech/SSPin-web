@@ -713,17 +713,16 @@
         
         <div class="badge-pill">
             <i data-lucide="sparkles"></i>
-            <span data-i18n="badge_text">Herramienta para creadores</span>
+            <span data-i18n="badge_text">Gratis y para todos</span>
         </div>
 
         <h1 class="hero-title" data-i18n-html="hero_title">
-            Descarga multimedia de<br>
-            <span class="gradient-cyan">Pinterest</span>, <span class="gradient-green">TikTok</span> y <span class="gradient-instagram">Instagram</span><br>
-            sin complicaciones
+            Descarga videos de<br>
+            <span class="gradient-cyan">Pinterest</span>, <span class="gradient-green">TikTok</span> e <span class="gradient-instagram">Instagram</span><br>
         </h1>
 
         <p class="hero-subtitle" data-i18n="hero_subtitle">
-            Guarda contenido rápido, en alta calidad y libre de marcas de agua o restricciones. También puedes obtener CapCut gratis.
+           Rápido, gratis y sin marcas de agua.
         </p>
 
         <div class="downloader-card">
@@ -788,7 +787,7 @@
         </div>
 
         <div class="features-header">
-            <h2 class="section-title" data-i18n="feat_title">Pensado para creadores</h2>
+            <h2 class="section-title" data-i18n="feat_title">Todo lo que necesitas</h2>
             <p class="section-desc" data-i18n="feat_desc">Rápido, limpio y sin complicaciones.</p>
         </div>
 
@@ -872,7 +871,7 @@
         <section class="capcut-section" id="capcut-gratis">
             <h3 data-i18n="capcut_h">CapCut Gratis</h3>
             <p data-i18n="capcut_p">Entra a mi canal de Telegram para descargar CapCut gratis.</p>
-            <a class="capcut-link" href="https://t.me/+NRqzTKl3oJFkZjAx" target="_blank" rel="noopener noreferrer" onclick="abrirTelegram(event)">https://t.me/+NRqzTKl3oJFkZjAx</a>
+            <a class="capcut-link" href="https://t.me/mods_apps_official" target="_blank" rel="noopener noreferrer" onclick="abrirTelegram(event)">https://t.me/mods_apps_official</a>
         </section>
 
         <section class="site-info-footer">
@@ -896,7 +895,7 @@
         </section>
 
         <footer>
-            <p>© 2026 SS MediaDrop · <span data-i18n="footer_creators">Para creadores.</span></p>
+            <p>© 2026 SS MediaDrop</p>
             <p style="color: #4a4e57;">Pinterest · TikTok · Instagram · CapCut Gratis</p>
         </footer>
 
@@ -938,7 +937,7 @@
                 loading_title: "Procesando...",
                 loading_desc: "Por favor, espere un momento",
                 btn_capcut: "CapCut gratis",
-                badge_text: "Herramienta para creadores",
+                badge_text: "Gratis y para todos",
                 hero_title: "Descarga multimedia de<br><span class='gradient-cyan'>Pinterest</span>, <span class='gradient-green'>TikTok</span> y <span class='gradient-instagram'>Instagram</span><br>sin complicaciones",
                 hero_subtitle: "Guarda contenido rápido, en alta calidad y libre de marcas de agua o restricciones. También puedes obtener CapCut gratis.",
                 btn_paste: "Pegar",
@@ -950,7 +949,7 @@
                 btn_hd: "Descargar HD (1080p)",
                 btn_sd: "Descargar SD (720p)",
                 scroll_more: "Más abajo",
-                feat_title: "Pensado para creadores",
+                feat_title: "Todo lo que necesitas",
                 feat_desc: "Rápido, limpio y sin complicaciones.",
                 f1_title: "Ultrarrápido", f1_desc: "Descargas listas en segundos.",
                 f2_title: "Sin marcas de agua", f2_desc: "Video limpio en calidad original.",
@@ -1210,8 +1209,8 @@
         /* ABRIR TELEGRAM (funciona en web y en app/WebView) */
         function abrirTelegram(e) {
             e.preventDefault();
-            const hash = 'NRqzTKl3oJFkZjAx';
-            const link = 'https://t.me/+' + hash;
+            const canal = 'mods_apps_official';
+            const link = 'https://t.me/' + canal;
             const esAndroid = /Android/i.test(navigator.userAgent);
             const esWebView = /; wv\)|Version\/[\d.]+ Chrome\/[\d.]+ (Mobile )?Safari/i.test(navigator.userAgent) || (window.navigator.standalone === true);
 
@@ -1226,7 +1225,7 @@
 
                 const f = document.createElement('iframe');
                 f.style.display = 'none';
-                f.src = 'intent://join?invite=' + hash + '#Intent;scheme=tg;package=org.telegram.messenger;end';
+                f.src = 'intent://resolve?domain=' + canal + '#Intent;scheme=tg;package=org.telegram.messenger;end';
                 document.body.appendChild(f);
 
                 setTimeout(() => {
@@ -1235,8 +1234,7 @@
                     if (f.parentNode) f.parentNode.removeChild(f);
                     if (!abierto) {
                         // Respaldo: Telegram Web (carga como página normal https dentro de la app)
-                        window.location.href = 'https://web.telegram.org/k/#?tgaddr=' +
-                            encodeURIComponent('tg://join?invite=' + hash);
+                        window.location.href = 'https://web.telegram.org/k/#@' + canal;
                     }
                 }, 1800);
                 return;
