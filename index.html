@@ -1433,6 +1433,40 @@
             try { input.select(); } catch (err) {}
         }
 
+        /* ANUNCIOS ADMOB (solo dentro de la app Android; en la web no hace nada) */
+        const ADMOB_USAR_PRUEBA = true; // cambia a false cuando tengas tu ID real y la app esté publicada
+        const ADMOB_BANNER_PRUEBA = 'ca-app-pub-3940256099942544/6300978111'; // ID de prueba de Google
+        const ADMOB_BANNER_REAL = 'ca-app-pub-1380562903247281/3068062097'; // formato ca-app-pub-XXXX/YYYY
+
+        async function iniciarAnunciosApp() {
+            try {
+                const cap = window.Capacitor;
+                if (!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+                const AdMob = cap.Plugins && cap.Plugins.AdMob;
+                if (!AdMob) return;
+
+                let info = await AdMob.requestConsentInfo();
+                if (info.isConsentFormAvailable && info.status === 'REQUIRED') {
+                    info = await AdMob.showConsentForm();
+                }
+                if (!info.canRequestAds) return;
+
+                await AdMob.initialize();
+
+                const adId = ADMOB_USAR_PRUEBA ? ADMOB_BANNER_PRUEBA : ADMOB_BANNER_REAL;
+                await AdMob.showBanner({
+                    adId: adId,
+                    adSize: 'ADAPTIVE_BANNER',
+                    position: 'BOTTOM_CENTER',
+                    margin: 0,
+                    isTesting: ADMOB_USAR_PRUEBA
+                });
+            } catch (e) {
+                console.log('AdMob no disponible:', e && e.message);
+            }
+        }
+        window.addEventListener('load', () => setTimeout(iniciarAnunciosApp, 1500));
+
         document.getElementById('download-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             ocultarError();
