@@ -1199,7 +1199,7 @@
                     <h3 class="modal-title" style="text-align:center;">${t.rate_title}</h3>
                     <div class="modal-body" style="text-align:center;">
                         <p style="margin-bottom:1.2rem;">${t.rate_text}</p>
-                        <button class="btn-action-primary" onclick="window.open('https://play.google.com', '_blank')">${t.rate_btn}</button>
+                        <button class="btn-action-primary" onclick="calificarApp()">${t.rate_btn}</button>
                     </div>
                 `;
             }
@@ -1331,11 +1331,48 @@
             closeModal();
         }
 
-        function recomendarAmigos() {
-            if (navigator.share) {
-                navigator.share({ title: 'SS MediaDrop', url: window.location.href }).catch(() => {});
+        const APP_ID_PLAY = 'com.ssmediadrop.app';
+        const URL_PLAY_STORE = 'https://play.google.com/store/apps/details?id=' + APP_ID_PLAY;
+        const URL_SITIO = 'https://sspin-descargas.netlify.app';
+        const TEXTO_COMPARTIR = 'Descarga videos de Pinterest, TikTok e Instagram gratis con SS MediaDrop';
+
+        function esAppNativa() {
+            const cap = window.Capacitor;
+            return !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+        }
+
+        function plugin(nombre) {
+            const cap = window.Capacitor;
+            if (!cap) return null;
+            try {
+                if (cap.registerPlugin) return cap.registerPlugin(nombre);
+            } catch (e) {}
+            return (cap.Plugins && cap.Plugins[nombre]) || null;
+        }
+
+        function calificarApp() {
+            if (esAppNativa()) {
+                window.location.href = 'market://details?id=' + APP_ID_PLAY;
             } else {
-                alert('¡Comparte SS MediaDrop!');
+                window.open(URL_PLAY_STORE, '_blank');
+            }
+        }
+
+        async function recomendarAmigos() {
+            const enlace = esAppNativa() ? URL_PLAY_STORE : URL_SITIO;
+            try {
+                const Share = plugin('Share');
+                if (esAppNativa() && Share) {
+                    await Share.share({ title: 'SS MediaDrop', text: TEXTO_COMPARTIR, url: enlace, dialogTitle: 'Recomendar a amigos' });
+                    return;
+                }
+            } catch (e) {
+                if (e && /cancel/i.test(e.message || '')) return;
+            }
+            if (navigator.share) {
+                navigator.share({ title: 'SS MediaDrop', text: TEXTO_COMPARTIR, url: enlace }).catch(() => {});
+            } else {
+                window.open('https://wa.me/?text=' + encodeURIComponent(TEXTO_COMPARTIR + ' ' + enlace), '_blank');
             }
         }
 
@@ -1434,7 +1471,7 @@
         }
 
         /* ANUNCIOS ADMOB (solo dentro de la app Android; en la web no hace nada) */
-        const ADMOB_USAR_PRUEBA = true; // cambia a false cuando tengas tu ID real y la app esté publicada
+        const ADMOB_USAR_PRUEBA = false; // true = anuncios de prueba, false = anuncios reales
         const ADMOB_BANNER_PRUEBA = 'ca-app-pub-3940256099942544/6300978111'; // ID de prueba de Google
         const ADMOB_BANNER_REAL = 'ca-app-pub-1380562903247281/3068062097'; // formato ca-app-pub-XXXX/YYYY
 
@@ -1442,7 +1479,7 @@
             try {
                 const cap = window.Capacitor;
                 if (!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
-                const AdMob = cap.Plugins && cap.Plugins.AdMob;
+                const AdMob = plugin('AdMob');
                 if (!AdMob) return;
 
                 let info = await AdMob.requestConsentInfo();
