@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ssmediadrop.app",
+      "sha256_cert_fingerprints": [
+        "91:C5:7C:E9:9E:15:BF:60:BC:10:FB:73:EA:AC:33:29:CB:46:65:56:99:3F:CE:50:05:4E:A5:08:81:11:27:4E"
+      ]
+    }
+  }
+]
