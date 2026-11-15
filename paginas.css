@@ -219,3 +219,4 @@ details.faq p:last-child { margin-bottom: 0; }
     .brand-name { font-size: 1.05rem; }
     .back-link { font-size: 0.78rem; padding: 7px 11px; }
 }
+img.logo-box { width: 34px; height: 34px; padding: 0; background: none; object-fit: cover; border-radius: 8px; }
