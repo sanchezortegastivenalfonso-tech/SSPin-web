@@ -1483,8 +1483,7 @@
         /* ANUNCIOS ADMOB (solo dentro de la app Android; en la web no hace nada) */
         const ADMOB_USAR_PRUEBA = false; // true = anuncios de prueba, false = anuncios reales
         const ADMOB_BANNER_PRUEBA = 'ca-app-pub-3940256099942544/6300978111'; // ID de prueba de Google
-        const ADMOB_BANNER_REAL = 'ca-app-pub-1380562903247281/9191638811'; // Tu ID de banner real[cite: 8]
-        const ADMOB_APPOPEN_REAL = 'ca-app-pub-1380562903247281/1215131787'; // Tu ID de anuncio de inicio real[cite: 7]
+        const ADMOB_BANNER_REAL = 'ca-app-pub-1380562903247281/9191638811'; // formato ca-app-pub-XXXX/YYYY
 
         async function iniciarAnunciosApp() {
             try {
@@ -1501,7 +1500,6 @@
 
                 await AdMob.initialize();
 
-                // 1. Mostrar el Banner inferior
                 const adId = ADMOB_USAR_PRUEBA ? ADMOB_BANNER_PRUEBA : ADMOB_BANNER_REAL;
                 await AdMob.showBanner({
                     adId: adId,
@@ -1510,12 +1508,6 @@
                     margin: 0,
                     isTesting: ADMOB_USAR_PRUEBA
                 });
-
-                // 2. Cargar y mostrar el Anuncio de Inicio (App Open)
-                await AdMob.prepareRewardVideoAd ? null : null; // Soporte preventivo del plugin
-                await AdMob.prepareInterstitial({ adId: ADMOB_APPOPEN_REAL, isTesting: ADMOB_USAR_PRUEBA });
-                await AdMob.showInterstitial();
-
             } catch (e) {
                 console.log('AdMob no disponible:', e && e.message);
             }
