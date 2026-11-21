@@ -1484,6 +1484,23 @@
         const ADMOB_USAR_PRUEBA = false; // true = anuncios de prueba, false = anuncios reales
         const ADMOB_BANNER_PRUEBA = 'ca-app-pub-3940256099942544/6300978111'; // ID de prueba de Google
         const ADMOB_BANNER_REAL = 'ca-app-pub-1380562903247281/9191638811'; // formato ca-app-pub-XXXX/YYYY
+        const ADMOB_INICIO_PRUEBA = 'ca-app-pub-3940256099942544/9257395921'; // anuncio de inicio de prueba de Google
+        const ADMOB_INICIO_REAL = 'ca-app-pub-1380562903247281/1215131787'; // anuncio de inicio de la app
+        let ultimoAnuncioInicio = 0;
+        const ESPERA_ANUNCIO_INICIO = 30 * 60 * 1000; // al volver a la app: como mínimo 30 minutos entre anuncios de inicio
+
+        async function mostrarAnuncioInicio(AdMob) {
+            try {
+                const ahora = Date.now();
+                if (ahora - ultimoAnuncioInicio < ESPERA_ANUNCIO_INICIO) return;
+                const adId = ADMOB_USAR_PRUEBA ? ADMOB_INICIO_PRUEBA : ADMOB_INICIO_REAL;
+                await AdMob.loadAppOpen({ adId: adId });
+                ultimoAnuncioInicio = Date.now();
+                await AdMob.showAppOpen();
+            } catch (e) {
+                console.log('Anuncio de inicio no disponible:', e && e.message);
+            }
+        }
 
         async function iniciarAnunciosApp() {
             try {
@@ -1512,6 +1529,12 @@
                     position: 'BOTTOM_CENTER',
                     margin: 0,
                     isTesting: ADMOB_USAR_PRUEBA
+                });
+
+                // Anuncio de inicio: al abrir la app y, pasado un rato, al volver a ella
+                mostrarAnuncioInicio(AdMob);
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') mostrarAnuncioInicio(AdMob);
                 });
             } catch (e) {
                 console.log('AdMob no disponible:', e && e.message);
