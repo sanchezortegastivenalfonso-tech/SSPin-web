@@ -1522,6 +1522,9 @@
 
                 await AdMob.initialize();
 
+                // Anuncio de inicio primero y en paralelo con el banner, para que salga lo antes posible
+                mostrarAnuncioInicio(AdMob);
+
                 const adId = ADMOB_USAR_PRUEBA ? ADMOB_BANNER_PRUEBA : ADMOB_BANNER_REAL;
                 await AdMob.showBanner({
                     adId: adId,
@@ -1531,8 +1534,7 @@
                     isTesting: ADMOB_USAR_PRUEBA
                 });
 
-                // Anuncio de inicio: al abrir la app y, pasado un rato, al volver a ella
-                mostrarAnuncioInicio(AdMob);
+                // Al volver a la app, pasado un rato, se vuelve a mostrar el anuncio de inicio
                 document.addEventListener('visibilitychange', () => {
                     if (document.visibilityState === 'visible') mostrarAnuncioInicio(AdMob);
                 });
@@ -1540,7 +1542,15 @@
                 console.log('AdMob no disponible:', e && e.message);
             }
         }
-        window.addEventListener('load', () => setTimeout(iniciarAnunciosApp, 1500));
+        // Arranca de inmediato (sin esperar a que cargue toda la página); si el puente nativo aún no está, reintenta una vez
+        (function arrancarAnuncios() {
+            const cap = window.Capacitor;
+            if (cap && cap.isNativePlatform && cap.isNativePlatform()) {
+                iniciarAnunciosApp();
+            } else {
+                setTimeout(iniciarAnunciosApp, 500);
+            }
+        })();
 
         document.getElementById('download-form').addEventListener('submit', async (e) => {
             e.preventDefault();
