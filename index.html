@@ -1481,26 +1481,58 @@
         }
 
         /* ANUNCIOS ADMOB (solo dentro de la app Android; en la web no hace nada) */
-        const ADMOB_USAR_PRUEBA = false; // true = anuncios de prueba, false = anuncios reales
+        /* ===== VERSIÓN DE DIAGNÓSTICO: muestra en pantalla qué pasa con los anuncios ===== */
+        const ADMOB_USAR_PRUEBA = true; // DIAGNÓSTICO: true = anuncio de prueba. Después se vuelve a false
         const ADMOB_BANNER_PRUEBA = 'ca-app-pub-3940256099942544/6300978111'; // ID de prueba de Google
         const ADMOB_BANNER_REAL = 'ca-app-pub-1380562903247281/9191638811'; // formato ca-app-pub-XXXX/YYYY
 
-        async function iniciarAnunciosApp() {
+        function diagAnuncios(texto) {
             try {
-                const cap = window.Capacitor;
-                if (!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
-                const AdMob = plugin('AdMob');
-                if (!AdMob) return;
-
-                let info = await AdMob.requestConsentInfo();
-                if (info.isConsentFormAvailable && info.status === 'REQUIRED') {
-                    info = await AdMob.showConsentForm();
+                let caja = document.getElementById('diag-anuncios');
+                if (!caja) {
+                    caja = document.createElement('div');
+                    caja.id = 'diag-anuncios';
+                    caja.style.cssText = 'position:fixed;left:8px;right:8px;top:70px;z-index:99999;background:rgba(0,0,0,.85);color:#0f0;font:12px/1.4 monospace;padding:8px;border-radius:8px;white-space:pre-wrap;max-height:40vh;overflow:auto;';
+                    caja.onclick = () => caja.remove();
+                    document.body.appendChild(caja);
                 }
-                if (!info.canRequestAds) return;
+                caja.textContent += texto + '\n';
+            } catch (e) {}
+        }
+
+        async function iniciarAnunciosApp() {
+            const cap = window.Capacitor;
+            if (!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return; // en la web no hace nada
+            try {
+                diagAnuncios('1) App nativa: OK');
+                const AdMob = plugin('AdMob');
+                if (!AdMob) { diagAnuncios('2) ERROR: el plugin AdMob NO está en la app'); return; }
+                diagAnuncios('2) Plugin AdMob: OK');
+
+                try {
+                    await AdMob.addListener('bannerAdLoaded', () => diagAnuncios('EVENTO: banner CARGADO'));
+                    await AdMob.addListener('bannerAdFailedToLoad', (e) => diagAnuncios('EVENTO: banner FALLÓ -> ' + JSON.stringify(e)));
+                    await AdMob.addListener('bannerAdSizeChanged', (e) => diagAnuncios('EVENTO: tamaño -> ' + JSON.stringify(e)));
+                } catch (e) { diagAnuncios('aviso listeners: ' + (e && e.message)); }
+
+                // El consentimiento (UMP) solo es obligatorio en Europa/Reino Unido. Si falla, se sigue igual.
+                try {
+                    let info = await AdMob.requestConsentInfo();
+                    diagAnuncios('3) Consentimiento: ' + JSON.stringify(info));
+                    if (info.isConsentFormAvailable && info.status === 'REQUIRED') {
+                        info = await AdMob.showConsentForm();
+                        diagAnuncios('3b) Tras formulario: ' + JSON.stringify(info));
+                    }
+                    if (info.canRequestAds === false) { diagAnuncios('AVISO: el usuario no dio consentimiento, no se piden anuncios'); return; }
+                } catch (e) {
+                    diagAnuncios('3) Consentimiento no disponible (se continua): ' + String((e && e.message) || e).slice(0, 80));
+                }
 
                 await AdMob.initialize();
+                diagAnuncios('4) AdMob inicializado');
 
                 const adId = ADMOB_USAR_PRUEBA ? ADMOB_BANNER_PRUEBA : ADMOB_BANNER_REAL;
+                diagAnuncios('5) Pidiendo banner: ' + adId + (ADMOB_USAR_PRUEBA ? ' (PRUEBA)' : ' (REAL)'));
                 await AdMob.showBanner({
                     adId: adId,
                     adSize: 'ADAPTIVE_BANNER',
@@ -1508,8 +1540,9 @@
                     margin: 0,
                     isTesting: ADMOB_USAR_PRUEBA
                 });
+                diagAnuncios('6) showBanner terminó sin error');
             } catch (e) {
-                console.log('AdMob no disponible:', e && e.message);
+                diagAnuncios('ERROR: ' + (e && (e.message || JSON.stringify(e))));
             }
         }
         window.addEventListener('load', () => setTimeout(iniciarAnunciosApp, 1500));
