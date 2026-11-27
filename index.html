@@ -1489,16 +1489,26 @@
         let ultimoAnuncioInicio = 0;
         const ESPERA_ANUNCIO_INICIO = 30 * 60 * 1000; // al volver a la app: como mínimo 30 minutos entre anuncios de inicio
 
+        // Le avisa a la app (versión nueva) que ya puede quitar el logo de inicio
+        function liberarLogoInicio() {
+            try { if (window.AndroidApp && window.AndroidApp.liberarSplash) window.AndroidApp.liberarSplash(); } catch (e) {}
+        }
+
+        // Si la app ya mostró el anuncio de inicio por su cuenta, la página no lo repite al abrir
+        try { if (window.AndroidApp && window.AndroidApp.inicioNativo && window.AndroidApp.inicioNativo()) ultimoAnuncioInicio = Date.now(); } catch (e) {}
+
         async function mostrarAnuncioInicio(AdMob) {
             try {
                 const ahora = Date.now();
-                if (ahora - ultimoAnuncioInicio < ESPERA_ANUNCIO_INICIO) return;
+                if (ahora - ultimoAnuncioInicio < ESPERA_ANUNCIO_INICIO) { liberarLogoInicio(); return; }
                 const adId = ADMOB_USAR_PRUEBA ? ADMOB_INICIO_PRUEBA : ADMOB_INICIO_REAL;
                 await AdMob.loadAppOpen({ adId: adId });
                 ultimoAnuncioInicio = Date.now();
+                liberarLogoInicio(); // el anuncio ya está cargado: se quita el logo y se muestra el anuncio
                 await AdMob.showAppOpen();
             } catch (e) {
                 console.log('Anuncio de inicio no disponible:', e && e.message);
+                liberarLogoInicio(); // si no hay anuncio, se entra a la app normalmente
             }
         }
 
